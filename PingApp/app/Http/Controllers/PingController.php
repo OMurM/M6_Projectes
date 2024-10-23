@@ -48,6 +48,11 @@ class PingController extends Controller
         return redirect()->route('pings.index')->with('success', 'Ping deleted successfully!');
     }
 
+    public function edit()
+    {
+        // Correct this function to edit a ping
+    }
+
     public function validate_ping()
     {
         $pings = Ping::all();
@@ -72,7 +77,7 @@ class PingController extends Controller
         $output = [];
         $status = null;
 
-        $command = sprintf("ping -n 1 %s", escapeshellarg($ip)); // For Windows
+        $command = sprintf("ping -n 1 %s", escapeshellarg($ip));
         exec($command, $output, $status);
 
         return $status === 0; // Return true if ping was successful

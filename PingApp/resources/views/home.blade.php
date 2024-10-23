@@ -1,20 +1,13 @@
 <!-- resources/views/home.blade.php -->
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="{{ asset('css/partials/basic.css') }}">
-</head>
-<body>
-    @include('partials.home.header')  <!-- Incluir el header -->
+@extends('layouts.app')  <!-- Extend the layout -->
 
-    <div class="container">
-        <h1>Bienvenido a la Aplicación de Pings</h1>
-        <h2>Selecciona una opción del menú</h2>
+@section('title', 'Home')  <!-- Set the page title -->
+
+@section('content')  <!-- Define the content section -->
+    <h1>2DAM M6_Projects</h1>
+    <h2>Select a project on the menu to go</h2>
+
+    <div>
+        <a href="{{ route('pings.index') }}" class="btn btn-primary">Ping</a>
     </div>
-
-    @include('partials.home.footer')  <!-- Incluir el footer -->
-</body>
-</html>
+@endsection

@@ -9,5 +9,9 @@ class Ping extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'ip_dominio', 'estado'];
+    protected $fillable = [
+        'ip_dominio',
+        'nombre',
+        'estado',
+    ];
 }

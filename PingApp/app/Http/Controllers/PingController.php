@@ -1,4 +1,5 @@
 <?php
+// App/Http/Controllers/PingController.php
 
 namespace App\Http\Controllers;
 
@@ -34,13 +35,25 @@ class PingController extends Controller
         return redirect()->route('pings.index')->with('success', 'Ping creado con éxito!');
     }
 
+    public function destroy($id)
+    {
+        $ping = Ping::find($id);
+
+        if (!$ping) {
+            return redirect()->route('pings.index')->with('error', 'Ping not found.');
+        }
+
+        $ping->delete();
+
+        return redirect()->route('pings.index')->with('success', 'Ping deleted successfully!');
+    }
+
     public function validate_ping()
     {
         $pings = Ping::all();
         $updatedPings = [];
 
         foreach ($pings as $ping) {
-
             $pingStatus = $this->ping($ping->ip_dominio);
             $ping->estado = $pingStatus;
             $ping->save();
@@ -59,10 +72,9 @@ class PingController extends Controller
         $output = [];
         $status = null;
 
-        // Comando de ping
-        $command = sprintf("ping -n 1 %s", escapeshellarg($ip));
+        $command = sprintf("ping -n 1 %s", escapeshellarg($ip)); // For Windows
         exec($command, $output, $status);
 
-        return $status === 0;
+        return $status === 0; // Return true if ping was successful
     }
 }

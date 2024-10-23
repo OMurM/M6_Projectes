@@ -1,0 +1,90 @@
+/* resources/css/app.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background-color: #343a40; /* Dark background color */
+    padding: 10px 20px;
+}
+
+.navbar-brand {
+    color: #fff;
+    font-size: 1.5rem;
+    text-decoration: none;
+}
+
+.navbar-nav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.nav-item {
+    margin-right: 15px;
+}
+
+.nav-link {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 15px;
+    font-size: 1rem;
+}
+
+.nav-link:hover {
+    background-color: #495057; /* Slightly lighter background on hover */
+    color: #ffffff;
+    border-radius: 5px;
+}
+
+.navbar-toggler {
+    color: #ffffff;
+    border: none;
+    background-color: #495057;
+    padding: 5px 10px;
+}
+
+.navbar-toggler-icon {
+    background-color: #fff;
+    width: 30px;
+    height: 3px;
+    display: block;
+    margin: 5px 0;
+}
+
+/* styles for basic.css */
+html, body {
+    height: 100%; /* Set full height for the body */
+    margin: 0; /* Remove default margin */
+}
+
+body {
+    display: flex; /* Enable Flexbox */
+    flex-direction: column; /* Stack children vertically */
+}
+
+.container {
+    flex: 1; /* This allows the content area to grow */
+}
+
+.footer {
+    background-color: #f8f9fa; /* Background color for the footer */
+    padding: 10px 0; /* Padding for footer */
+    text-align: center; /* Center the footer text */
+}
+
+/* For mobile devices, stack the menu vertically */
+@media (max-width: 768px) {
+    .navbar-nav {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .nav-item {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}

@@ -1,4 +1,3 @@
-<!-- resources/views/pings/index.blade.php -->
 @extends('layouts.app')
 
 @section('title', 'Pings')
@@ -9,6 +8,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
     <a href="{{ route('pings.create') }}" class="btn btn-primary">Create Ping</a>
+
     <table class="table">
         <thead>
             <tr>
@@ -21,12 +21,14 @@
         <tbody>
             @foreach ($pings as $ping)
                 <tr id="ping-{{ $ping->id }}">
-                    <td>{{ $ping->ip_dominio }}</td>
-                    <td>{{ $ping->nombre }}</td>
-                    <td class="ping-status">{{ $ping->estado ? 'Online' : 'Offline' }}</td>
+                    <td class="ping-ip">{{ $ping->ip_dominio }}</td>
+                    <td class="ping-nombre">{{ $ping->nombre }}</td>
+                    <td class="ping-status">
+                        {{ $ping->estado ? 'Online' : 'Offline' }}
+                    </td>
                     <td>
-                        <button class="btn btn-info" onclick="checkPing({{ $ping->id }}, '{{ $ping->ip_dominio }}')">Check Status</button>
-                        <a href="{{ route('pings.edit', $ping->id) }}" class="btn btn-warning">Edit</a>
+                        <button class="btn btn-success check-status" data-id="{{ $ping->id }}">Check Status</button>
+                        <button class="btn btn-warning edit-btn" data-id="{{ $ping->id }}">Edit</button>
                         <form action="{{ route('pings.destroy', $ping->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
@@ -38,21 +40,30 @@
         </tbody>
     </table>
 
-    <script>
-        function checkPing(pingId, ip) {
-            fetch(`/ping?ip=${ip}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.estado !== undefined) {
-                        const statusCell = document.querySelector(`#ping-${pingId} .ping-status`);
-                        statusCell.textContent = data.estado ? 'Online' : 'Offline';
-                    } else {
-                        alert('Error checking ping status.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-    </script>
+    <!-- Edit Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Ping</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        @csrf
+                        <input type="hidden" name="id" id="pingId">
+                        <div class="form-group">
+                            <label for="ip_dominio">IP/Dominio:</label>
+                            <input type="text" class="form-control" id="ip_dominio" name="ip_dominio" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection

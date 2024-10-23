@@ -5,19 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Mi Aplicación')</title>
-    <link rel="stylesheet" href="{{ asset('css/partials/app.css') }}">  <!-- Updated CSS link -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> <!-- Optional Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body class="d-flex flex-column min-vh-100">  <!-- Use Flexbox for the layout -->
 
-    <x-navigation-menu />  <!-- Include the Navigation Menu component -->
+    <x-navigation-menu />
 
-    <div class="container flex-fill">  <!-- Make the container flexible -->
-        @yield('content')  <!-- Content section where child views will be rendered -->
+    <div class="container flex-fill">
+        @yield('content')
     </div>
 
-    <x-footer />  <!-- Include the Footer component -->
+    <x-footer />
     
-    <script src="{{ asset('js/app.js') }}"></script> <!-- Include your JavaScript file -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="{{ asset('js/ping_index.js') }}"></script>
 </body>
 </html>

@@ -48,11 +48,6 @@ class PingController extends Controller
         return redirect()->route('pings.index')->with('success', 'Ping deleted successfully!');
     }
 
-    public function edit()
-    {
-        // Correct this function to edit a ping
-    }
-
     public function validate_ping()
     {
         $pings = Ping::all();
@@ -81,5 +76,40 @@ class PingController extends Controller
         exec($command, $output, $status);
 
         return $status === 0; // Return true if ping was successful
+    }
+    public function update(Request $request, $id)
+    {
+    $request->validate([
+        'ip_dominio' => 'required|ip|max:15',
+        'nombre' => 'required|string|max:255',
+    ]);
+
+    $ping = Ping::find($id);
+
+    if (!$ping) {
+        return response()->json(['error' => 'Ping not found'], 404);
+    }
+
+    $ping->update([
+        'ip_dominio' => $request->ip_dominio,
+        'nombre' => $request->nombre,
+    ]);
+
+    return response()->json(['success' => 'Ping updated successfully!']);
+    }
+
+    public function checkStatus($id)
+    {
+    $ping = Ping::find($id);
+
+    if (!$ping) {
+        return response()->json(['error' => 'Ping not found'], 404);
+    }
+
+    $pingStatus = $this->ping($ping->ip_dominio);
+    $ping->estado = $pingStatus;
+    $ping->save();
+
+    return response()->json(['status' => $ping->estado]);
     }
 }

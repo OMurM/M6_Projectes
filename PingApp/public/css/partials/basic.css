@@ -1,0 +1,66 @@
+/* public/css/app.css */
+
+body {
+    background-color: #E2F1E7; 
+    color: #243642; 
+    font-family: 'Arial', sans-serif; 
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background-color: #387478; 
+}
+
+.navbar-brand {
+    font-weight: bold; 
+    color: #E2F1E7; 
+}
+
+.nav-link {
+    color: #E2F1E7 !important; 
+}
+
+.nav-link:hover {
+    color: #629584 !important; 
+}
+
+.container {
+    margin-top: 30px; 
+    padding: 20px; 
+    border-radius: 5px; 
+    background-color: #E2F1E7; 
+}
+
+h1, h2 {
+    color: #243642; 
+}
+
+.table {
+    background-color: #E2F1E7; 
+}
+
+.table th {
+    background-color: #629584; 
+    color: #FFFFFF; 
+}
+
+.table td {
+    color: #243642; 
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #387478; 
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: #E2F1E7; 
+}
+
+footer {
+    background-color: #387478; 
+    color: #E2F1E7; 
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 20px; 
+}

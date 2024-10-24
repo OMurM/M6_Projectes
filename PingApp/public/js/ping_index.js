@@ -1,4 +1,27 @@
+// public/js/ping/ping_index.js
+
 $(document).ready(function() {
+    // Set an interval to periodically check the status of all pings
+    setInterval(function() {
+        $('.check-status').each(function() {
+            const id = $(this).data('id');
+
+            $.ajax({
+                url: `/pings/check/${id}`, // Adjust the URL to match your Laravel route
+                method: 'GET',
+                success: function(response) {
+                    // Update the status and latency in the table
+                    $(`#ping-${id} .ping-status`).text(response.status ? 'Online' : 'Offline');
+                    $(`#ping-${id} .ping-latency`).text(response.latency !== null ? response.latency.toFixed(2) + ' ms' : 'N/A');
+                },
+                error: function(xhr) {
+                    console.error('Error checking status', xhr);
+                }
+            });
+        });
+    }, 1000);
+
+    // Edit button funcionality 
     $('.edit-btn').on('click', function() {
         const id = $(this).data('id');
 
@@ -12,7 +35,7 @@ $(document).ready(function() {
         $('#editModal').modal('show');
     });
 
-    // Handle the edit form submission
+    // Handle the edit
     $('#editForm').on('submit', function(e) {
         e.preventDefault();
 
@@ -23,7 +46,7 @@ $(document).ready(function() {
         // Send an AJAX request to update the ping entry
         $.ajax({
             url: url,
-            method: 'PUT', // Use PUT for updates
+            method: 'PUT', // Use PUT for updates "Revise this I dont understand it at all"
             data: data,
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }, // CSRF token for security
             success: function(response) {
@@ -40,15 +63,16 @@ $(document).ready(function() {
         });
     });
 
-    // Check status logic
+    // Check status logic for manual checks remains unchanged
     $('.check-status').on('click', function() {
         const id = $(this).data('id');
 
         $.ajax({
-            url: `/pings/check/${id}`,  // Adjust the URL to match your Laravel route
+            url: `/pings/check/${id}`,
             method: 'GET',
             success: function(response) {
                 $(`#ping-${id} .ping-status`).text(response.status ? 'Online' : 'Offline');
+                $(`#ping-${id} .ping-latency`).text(response.latency !== null ? response.latency.toFixed(2) + ' ms' : 'N/A');
             },
             error: function(xhr) {
                 alert('Error checking status');

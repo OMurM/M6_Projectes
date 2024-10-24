@@ -9,7 +9,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <a href="{{ route('pings.create') }}" class="btn btn-primary">Create Ping</a>
+    <a href="{{ route('pings.create') }}" class="btn btn-primary">Create Ping (IP or Domain)</a>
 
     <table class="table">
         <thead>
@@ -17,6 +17,7 @@
                 <th>IP/Dominio</th>
                 <th>Nombre</th>
                 <th>Estado</th>
+                <th>latency (ms)</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -25,12 +26,11 @@
                 <tr id="ping-{{ $ping->id }}">
                     <td class="ping-ip">{{ $ping->ip_dominio }}</td>
                     <td class="ping-nombre">{{ $ping->nombre }}</td>
-                    <td class="ping-status">
-                        {{ $ping->estado ? 'Online' : 'Offline' }}
-                    </td>
+                    <td class="ping-status">{{ $ping->estado ? 'Online' : 'Offline' }}</td>
+                    <td class="ping-latency">{{ $ping->latency ?? 'N/A' }}</td>
                     <td>
                         <button class="btn btn-success check-status" data-id="{{ $ping->id }}">Check Status</button>
-                        <button class="btn btn-warning edit-btn" data-id="{{ $ping->id }}">Edit</button>
+                        <!-- <button class="btn btn-warning edit-btn" data-id="{{ $ping->id }}">Edit</button> Edit button--> 
                         <form action="{{ route('pings.destroy', $ping->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')

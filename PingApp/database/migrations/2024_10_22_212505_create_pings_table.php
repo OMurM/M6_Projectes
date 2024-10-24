@@ -13,6 +13,7 @@ class CreatePingsTable extends Migration
             $table->string('nombre');
             $table->string('ip_dominio');
             $table->boolean('estado')->default(false);
+            $table->integer('latency')->nullable();
             $table->timestamps();
         });
     }

@@ -1,5 +1,6 @@
 <?php
 // App/Http/Controllers/PingController.php
+// App/Http/Controllers/PingController.php
 
 namespace App\Http\Controllers;
 
@@ -21,22 +22,19 @@ class PingController extends Controller
 
     public function store(Request $request)
     {
-    $request->validate([
-        'ip_dominio' => ['required', 'string', 'max:255', function($attribute, $value, $fail) {
-            if (!filter_var($value, FILTER_VALIDATE_IP) && !filter_var($value, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
-                $fail('The ' . $attribute . ' must be a valid IP address or domain.');
-            }
-        }],
-        'nombre' => 'required|string|max:255',
-    ]);
+        $request->validate([
+            'ip_dominio' => ['required', 'string', 'max:255', function($attribute, $value, $fail) {
+                if (!filter_var($value, FILTER_VALIDATE_IP) && !filter_var($value, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+                    $fail('The ' . $attribute . ' must be a valid IP address or domain.');
+                }
+            }],
+            'nombre' => 'required|string|max:255',
+        ]);
 
-    Ping::create([
-        'ip_dominio' => $request->ip_dominio,
-        'nombre' => $request->nombre,
-        'estado' => false,
-    ]);
+        // Perform the ping and store the result
+        $this->performPing($request->ip_dominio, $request->nombre);
 
-    return redirect()->route('pings.index')->with('success', 'Ping created successfully!');
+        return redirect()->route('pings.index')->with('success', 'Ping created successfully!');
     }
 
     public function destroy($id)
@@ -58,69 +56,111 @@ class PingController extends Controller
         $updatedPings = [];
 
         foreach ($pings as $ping) {
-            $pingStatus = $this->ping($ping->ip_dominio);
-            $ping->estado = $pingStatus;
+            // Ping the domain and measure the status and latency
+            $pingResult = $this->ping($ping->ip_dominio);
+            $ping->estado = $pingResult['status'];  // true for online, false for offline
+            $ping->latency = $pingResult['latency'];  // store the latency (in ms)
+
             $ping->save();
 
             $updatedPings[] = [
                 'ip_dominio' => $ping->ip_dominio,
                 'estado' => $ping->estado ? 'Online' : 'Offline',
+                'latency' => $ping->latency,
             ];
         }
 
         return response()->json($updatedPings);
     }
 
-    private function ping($ip_or_domain)
+    // Perform the ping and save the data
+    private function performPing($ip, $nombre)
     {
-    $output = [];
-    $status = null;
+            
+        $ping = Ping::where('ip_dominio', $ip)->first();
 
-    if (filter_var($ip_or_domain, FILTER_VALIDATE_IP)) {
-        $command = sprintf("ping -n 1 %s", escapeshellarg($ip_or_domain));
-    } else {
-        $command = sprintf("ping -n 1 %s", escapeshellarg(gethostbyname($ip_or_domain)));
-    }
+        $startTime = microtime(true);
+        $command = sprintf("ping -n 1 %s", escapeshellarg($ip));
+        $output = shell_exec($command);
+        $endTime = microtime(true);
 
-    exec($command, $output, $status);
+        $latency = ($endTime - $startTime) * 1000; // Convert to milliseconds
 
-    return $status === 0;
+        if ($ping) {
+            // If it exists, update the existing record
+            $ping->nombre = $nombre;
+            $ping->estado = strpos($output, 'TTL') !== false; // Check if the ping was successful
+            $ping->latency = $latency;
+            $ping->save();
+        } else {
+            // If it doesn't exist, create a new record
+            $ping = new Ping();
+            $ping->ip_dominio = $ip;
+            $ping->nombre = $nombre;
+            $ping->estado = strpos($output, 'TTL') !== false; // Check if the ping was successful
+            $ping->latency = $latency; // Save latency in milliseconds
+            $ping->save();
+        }
     }
 
     public function update(Request $request, $id)
     {
-    $request->validate([
-        'ip_dominio' => 'required|ip|max:15',
-        'nombre' => 'required|string|max:255',
-    ]);
+        $request->validate([
+            'ip_dominio' => 'required|ip|max:15',
+            'nombre' => 'required|string|max:255',
+        ]);
 
-    $ping = Ping::find($id);
+        $ping = Ping::find($id);
 
-    if (!$ping) {
-        return response()->json(['error' => 'Ping not found'], 404);
-    }
+        if (!$ping) {
+            return response()->json(['error' => 'Ping not found'], 404);
+        }
 
-    $ping->update([
-        'ip_dominio' => $request->ip_dominio,
-        'nombre' => $request->nombre,
-    ]);
+        $ping->update([
+            'ip_dominio' => $request->ip_dominio,
+            'nombre' => $request->nombre,
+        ]);
 
-    return response()->json(['success' => 'Ping updated successfully!']);
+        return response()->json(['success' => 'Ping updated successfully!']);
     }
 
     public function checkStatus($id)
     {
-    
         $ping = Ping::findOrFail($id);
-    
-    $pingStatus = $this->ping($ping->ip_dominio);
-    
-    $ping->estado = $pingStatus;
-    $ping->save();
 
-    return response()->json([
-        'status' => $pingStatus
-    ]);
+        // Perform the ping and get the status and latency
+        $pingResult = $this->ping($ping->ip_dominio);
 
+        // Check if the ping result is valid
+        if (!is_array($pingResult) || !isset($pingResult['status'], $pingResult['latency'])) {
+            return response()->json(['error' => 'Error performing ping.'], 500);
+        }
+
+        // Update the ping record
+        $ping->estado = $pingResult['status'];
+        $ping->latency = $pingResult['latency'];
+        $ping->save();
+
+        return response()->json([
+            'status' => $pingResult['status'],
+            'latency' => $pingResult['latency'],
+        ]);
+    }
+
+
+    // Update ping method to return an array
+    private function ping($ip)
+    {
+        $startTime = microtime(true);
+        $command = sprintf("ping -n 1 %s", escapeshellarg($ip));
+        $output = shell_exec($command);
+        $endTime = microtime(true);
+
+        $latency = round(($endTime - $startTime) * 1000, 2);
+
+        return [
+            'status' => strpos($output, 'TTL') !== false,
+            'latency' => $latency,
+        ];
     }
 }

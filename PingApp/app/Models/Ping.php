@@ -13,5 +13,6 @@ class Ping extends Model
         'ip_dominio',
         'nombre',
         'estado',
+        'latency',
     ];
 }

@@ -4,9 +4,11 @@
 
 @section('content')
     <h1>Pings</h1>
+
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+
     <a href="{{ route('pings.create') }}" class="btn btn-primary">Create Ping</a>
 
     <table class="table">
@@ -41,12 +43,14 @@
     </table>
 
     <!-- Edit Modal -->
-    <div class="modal" id="editModal">
-        <div class="modal-dialog">
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Ping</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h5 class="modal-title" id="editModalLabel">Edit Ping</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <form id="editForm">
@@ -66,4 +70,9 @@
             </div>
         </div>
     </div>
+
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('js/ping_index.js') }}"></script>
 @endsection

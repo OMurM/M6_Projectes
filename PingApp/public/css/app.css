@@ -6,7 +6,7 @@ body {
 }
 
 .navbar {
-    background-color: #343a40; /* Dark background color */
+    background-color: #343a40;
     padding: 10px 20px;
 }
 
@@ -35,7 +35,7 @@ body {
 }
 
 .nav-link:hover {
-    background-color: #495057; /* Slightly lighter background on hover */
+    background-color: #495057;
     color: #ffffff;
     border-radius: 5px;
 }
@@ -57,23 +57,23 @@ body {
 
 /* styles for basic.css */
 html, body {
-    height: 100%; /* Set full height for the body */
-    margin: 0; /* Remove default margin */
+    height: 100%;
+    margin: 0;
 }
 
 body {
-    display: flex; /* Enable Flexbox */
-    flex-direction: column; /* Stack children vertically */
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
-    flex: 1; /* This allows the content area to grow */
+    flex: 1;
 }
 
 .footer {
-    background-color: #f8f9fa; /* Background color for the footer */
-    padding: 10px 0; /* Padding for footer */
-    text-align: center; /* Center the footer text */
+    background-color: #f8f9fa;
+    padding: 10px 0;
+    text-align: center;
 }
 
 /* For mobile devices, stack the menu vertically */

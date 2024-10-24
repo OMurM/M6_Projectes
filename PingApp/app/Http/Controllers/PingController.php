@@ -21,18 +21,22 @@ class PingController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'ip_dominio' => 'required|ip|max:15',
-            'nombre' => 'required|string|max:255',
-        ]);
+    $request->validate([
+        'ip_dominio' => ['required', 'string', 'max:255', function($attribute, $value, $fail) {
+            if (!filter_var($value, FILTER_VALIDATE_IP) && !filter_var($value, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+                $fail('The ' . $attribute . ' must be a valid IP address or domain.');
+            }
+        }],
+        'nombre' => 'required|string|max:255',
+    ]);
 
-        Ping::create([
-            'ip_dominio' => $request->ip_dominio,
-            'nombre' => $request->nombre,
-            'estado' => false,
-        ]);
+    Ping::create([
+        'ip_dominio' => $request->ip_dominio,
+        'nombre' => $request->nombre,
+        'estado' => false,
+    ]);
 
-        return redirect()->route('pings.index')->with('success', 'Ping creado con éxito!');
+    return redirect()->route('pings.index')->with('success', 'Ping created successfully!');
     }
 
     public function destroy($id)
@@ -67,16 +71,22 @@ class PingController extends Controller
         return response()->json($updatedPings);
     }
 
-    private function ping($ip)
+    private function ping($ip_or_domain)
     {
-        $output = [];
-        $status = null;
+    $output = [];
+    $status = null;
 
-        $command = sprintf("ping -n 1 %s", escapeshellarg($ip));
-        exec($command, $output, $status);
-
-        return $status === 0; // Return true if ping was successful
+    if (filter_var($ip_or_domain, FILTER_VALIDATE_IP)) {
+        $command = sprintf("ping -n 1 %s", escapeshellarg($ip_or_domain));
+    } else {
+        $command = sprintf("ping -n 1 %s", escapeshellarg(gethostbyname($ip_or_domain)));
     }
+
+    exec($command, $output, $status);
+
+    return $status === 0;
+    }
+
     public function update(Request $request, $id)
     {
     $request->validate([
@@ -100,16 +110,17 @@ class PingController extends Controller
 
     public function checkStatus($id)
     {
-    $ping = Ping::find($id);
-
-    if (!$ping) {
-        return response()->json(['error' => 'Ping not found'], 404);
-    }
-
+    
+        $ping = Ping::findOrFail($id);
+    
     $pingStatus = $this->ping($ping->ip_dominio);
+    
     $ping->estado = $pingStatus;
     $ping->save();
 
-    return response()->json(['status' => $ping->estado]);
+    return response()->json([
+        'status' => $pingStatus
+    ]);
+
     }
 }

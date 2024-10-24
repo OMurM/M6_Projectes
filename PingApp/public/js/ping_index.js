@@ -1,14 +1,10 @@
-// public/js/ping_index.js
-
 $(document).ready(function() {
     $('.edit-btn').on('click', function() {
         const id = $(this).data('id');
 
-        // Get current values
-        const ip = $(`#ping-${id} .ping-ip`).text();
-        const nombre = $(`#ping-${id} .ping-nombre`).text();
+        const ip = $(`#ping-${id} .ping-ip`).text().trim();
+        const nombre = $(`#ping-${id} .ping-nombre`).text().trim();
 
-        // Set values in the modal
         $('#pingId').val(id);
         $('#ip_dominio').val(ip);
         $('#nombre').val(nombre);
@@ -24,16 +20,19 @@ $(document).ready(function() {
         const url = `/pings/${id}`;
         const data = $(this).serialize(); // Serialize form data
 
+        // Send an AJAX request to update the ping entry
         $.ajax({
             url: url,
             method: 'PUT', // Use PUT for updates
             data: data,
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }, // CSRF token for security
             success: function(response) {
-                // Update the table row with new values
                 $(`#ping-${id} .ping-ip`).text($('#ip_dominio').val());
                 $(`#ping-${id} .ping-nombre`).text($('#nombre').val());
-                $('#editModal').modal('hide'); // Hide the modal
-                alert(response.success); // Show success message
+                
+                $('#editModal').modal('hide');
+
+                alert(response.success);
             },
             error: function(xhr) {
                 alert('Error updating ping');
@@ -46,14 +45,13 @@ $(document).ready(function() {
         const id = $(this).data('id');
 
         $.ajax({
-            url: `/pings/check/${id}`,  // Adjust the URL to the correct route
+            url: `/pings/check/${id}`,  // Adjust the URL to match your Laravel route
             method: 'GET',
             success: function(response) {
-                // Update the status in the table
                 $(`#ping-${id} .ping-status`).text(response.status ? 'Online' : 'Offline');
             },
             error: function(xhr) {
-                alert('Error checking status'); // Handle error
+                alert('Error checking status');
             }
         });
     });

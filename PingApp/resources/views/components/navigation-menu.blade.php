@@ -9,6 +9,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('pings.index') }}">Pings</a>
             </li>
+            <li class="nav-item">
+                <button id="theme-toggle" class="btn btn-outline-light">Toggle Theme</button>
+            </li>
         </ul>
     </div>
 </nav>

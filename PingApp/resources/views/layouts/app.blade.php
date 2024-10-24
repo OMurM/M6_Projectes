@@ -12,7 +12,8 @@
 
     <x-navigation-menu />
 
-    <div class="container flex-fill">
+    <div class="container">
+
         @yield('content')
     </div>
 
@@ -20,5 +21,6 @@
     
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="{{ asset('js/ping_index.js') }}"></script>
+    <script src="{{ asset('js/theme_toggle.js') }}"></script>
 </body>
 </html>

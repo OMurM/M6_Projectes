@@ -1,7 +1,6 @@
 // public/js/ping/ping_index.js
 
 $(document).ready(function() {
-    // Set an interval to periodically check the status of all pings
     setInterval(function() {
         $('.check-status').each(function() {
             const id = $(this).data('id');
@@ -10,7 +9,6 @@ $(document).ready(function() {
                 url: `/pings/check/${id}`, // Adjust the URL to match your Laravel route
                 method: 'GET',
                 success: function(response) {
-                    // Update the status and latency in the table
                     $(`#ping-${id} .ping-status`).text(response.status ? 'Online' : 'Offline');
                     $(`#ping-${id} .ping-latency`).text(response.latency !== null ? response.latency.toFixed(2) + ' ms' : 'N/A');
                 },
@@ -19,9 +17,9 @@ $(document).ready(function() {
                 }
             });
         });
-    }, 1000);
+    }, 1000); // Interval to 1 second
 
-    // Edit button funcionality 
+    // Edit button funcionality // remove partial not use 
     $('.edit-btn').on('click', function() {
         const id = $(this).data('id');
 
@@ -41,7 +39,7 @@ $(document).ready(function() {
 
         const id = $('#pingId').val();
         const url = `/pings/${id}`;
-        const data = $(this).serialize(); // Serialize form data
+        const data = $(this).serialize();
 
         // Send an AJAX request to update the ping entry
         $.ajax({
